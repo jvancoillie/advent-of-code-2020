@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+INPUT_FILE="input.txt"
+DOW=$(date +%d)
+MODE="PROD"
+
+while getopts "td:" OPTION
+do
+	case $OPTION in
+		t)
+			INPUT_FILE="test.txt"
+			MODE="TEST"
+			;;
+		d)
+			DOW=$OPTARG
+			;;
+	esac
+done
+
+PHP=`which php`
+
+echo "========= DAY: $DOW, MODE: $MODE =========";
+SCRIPT="day$DOW/index.php"
+INPUT="day$DOW/$INPUT_FILE"
+
+$PHP $SCRIPT < $INPUT

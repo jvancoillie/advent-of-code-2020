@@ -26,7 +26,7 @@ $messages = explode("\n", $messagesInput);
 
 class Decoder
 {
-    private $regexps = [];
+    private $rules = [];
 
     /**
      * Decoder constructor.
@@ -39,13 +39,7 @@ class Decoder
 
     public function createRegexpFromRuleId($id)
     {
-        $this->regexps[$id] = $this->createRegexp($this->rules[$id], $this->rules);
-        return $this->regexps[$id];
-    }
-
-    public function replaceRule($id, $value)
-    {
-        $this->rules[$id] = $value;
+        return $this->createRegexp($this->rules[$id], $this->rules);
     }
 
     public function createRegexp($rule, $rules)
@@ -68,31 +62,22 @@ class Decoder
             return implode('', $chain);
         }
     }
-
-    public function match($message, $regexpId)
-    {
-        return preg_match("/^".$this->regexps[$regexpId]."$/", $message);
-    }
 }
 
 
 $decoder = new Decoder($rules);
-$decoder->createRegexpFromRuleId(0);
+$regexp0 = $decoder->createRegexpFromRuleId(0);
+
 $sum = 0;
 foreach ($messages as $message) {
-    if ($decoder->match($message, 0)) {
+    if(preg_match("/^".$regexp0."$/", $message)){
         $sum++;
     }
 }
 
 echo "Puzzle A: $sum \n";
 
-
-
-$decoder->replaceRule(8, [[42], [42, 8]]);
-$decoder->replaceRule(11, [[42, 31],[42, 11, 31]]);
-
-// Thanks to thibat for his solution i didn't found it
+// Thanks to thibpat for his solution i didn't found it
 // https://github.com/tpatel/advent-of-code-2020/blob/main/day19.js
 
 $regexp42 = $decoder->createRegexpFromRuleId(42);
@@ -100,6 +85,7 @@ $regexp31 = $decoder->createRegexpFromRuleId(31);
 
 $regexp = '/^(?<group42>('.$regexp42.')+)(?<group31>('.$regexp31.')+)$/';
 $sum = 0;
+
 foreach ($messages as $message) {
     if(preg_match($regexp, $message, $matches))
     if(isset($matches['group42']) && isset($matches['group31'])){
@@ -112,8 +98,12 @@ foreach ($messages as $message) {
         }
     }
 }
+
 echo "Puzzle B: $sum \n";
+
+
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
+
 
 function dump($args)
 {

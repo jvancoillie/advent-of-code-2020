@@ -13,12 +13,12 @@ class Lobby
     const BLACK = '#';
     const WHITE = 'O';
     private $directions = [
-        [-1, 0],
-        [1, 0],
-        [0, 1],
-        [-1, 1],
-        [1, -1],
-        [0, -1],
+        'w'  => [-1, 0],
+        'e'  => [1,  0],
+        'ne' => [0,  1],
+        'nw' => [-1, 1],
+        'se' => [1, -1],
+        'sw' => [0, -1],
     ];
     private $minX = 0;
     private $minY = 0;
@@ -67,48 +67,19 @@ class Lobby
     public function doMoves($moves)
     {
         $x = $y = 0;
+
         foreach ($moves as $move) {
-            switch ($move) {
-                case 'w':
-                    $x -= 1;
-                    break;
-                case 'e':
-                    $x += 1;
-                    break;
-                case 'ne':
-                    $y += 1;
-                    break;
-                case 'nw':
-                    $y += 1;
-                    $x -= 1;
-                    break;
-                case 'se':
-                    $y -= 1;
-                    $x += 1;
-                    break;
-                case 'sw':
-                    $y -= 1;
-                    break;
-            }
+            $x += $this->directions[$move][0];
+            $y += $this->directions[$move][1];
         }
-        if ($x > $this->maxX) {
-            $this->maxX = $x;
-        }
-        if ($x < $this->minX) {
-            $this->minX = $x;
-        }
-        if ($y > $this->maxY) {
-            $this->maxY = $y;
-        }
-        if ($y < $this->minY) {
-            $this->minY = $y;
-        }
+
+        $this->updateFloorSize($x, $y);
+
         if (isset($this->floor[$x][$y])) {
             $this->floor[$x][$y] = ($this->floor[$x][$y] === self::BLACK) ? self::WHITE : self::BLACK;
         } else {
             $this->floor[$x][$y] = self::BLACK;
         }
-
     }
 
     public function countBlackTiles()
@@ -179,6 +150,26 @@ class Lobby
         $this->maxX++;
         $this->minY--;
         $this->maxY++;
+    }
+
+    /**
+     * @param int $x
+     * @param int $y
+     */
+    private function updateFloorSize(int $x, int $y): void
+    {
+        if ($x > $this->maxX) {
+            $this->maxX = $x;
+        }
+        if ($x < $this->minX) {
+            $this->minX = $x;
+        }
+        if ($y > $this->maxY) {
+            $this->maxY = $y;
+        }
+        if ($y < $this->minY) {
+            $this->minY = $y;
+        }
     }
 }
 
